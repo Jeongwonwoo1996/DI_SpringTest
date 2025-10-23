@@ -1,10 +1,15 @@
 package org.example.di_springtest.service;
 
+import org.example.di_springtest.dto.PostAllResponseDto;
+import org.example.di_springtest.dto.PostCreateRequestDto;
+import org.example.di_springtest.dto.PostDetailResponseDto;
+import org.example.di_springtest.dto.PostUpdateRequestDto;
 import org.example.di_springtest.model.Post;
 import org.example.di_springtest.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostDtoService {
@@ -15,26 +20,48 @@ public class PostDtoService {
   }
 
 
-  public List<Post> getAllPost() {
-    return postRepository.findAll();
+  public List<PostAllResponseDto> getAllPost() {
+
+    List<Post> allPosts = postRepository.findAll();
+    List<PostAllResponseDto> allPostDtos = allPosts.stream().map(PostAllResponseDto::of).collect(Collectors.toList());
+    return allPostDtos;
     
   }
 
-  public int createPost(Post post) {
-    return postRepository.insertPost(post);
+  public PostDetailResponseDto createPost(PostCreateRequestDto postDto) {
+    Post post = new Post();
+    post.setTitle(postDto.getTitle());
+    post.setBody(postDto.getBody());
+    int postId = postRepository.insertPost(post);
+    Post newPost = postRepository.findById(postId);
+    PostDetailResponseDto postDtoRet = PostDetailResponseDto.of(newPost);
+    return postDtoRet;
   }
 
-  public Post selectPost(int postId) {
-    return postRepository.findById(postId);
+  public PostDetailResponseDto selectPost(int postId) {
+    Post findPost = postRepository.findById(postId);
+    PostDetailResponseDto postDto = PostDetailResponseDto.of(findPost);
+    return postDto;
   }
 
-  public void updatePost(Post post) {
-    Post findPost = postRepository.findById(post.getPostId());
-    findPost.setBody(post.getBody());
+  public PostDetailResponseDto updatePost(PostUpdateRequestDto postDto) {
+    Post findPost = postRepository.findById(postDto.getPostId());
+    findPost.setBody(postDto.getBody());
     postRepository.updatePost(findPost);
+    Post updatedPost = postRepository.findById(postDto.getPostId());
+    PostDetailResponseDto postDtoRet = PostDetailResponseDto.of(updatedPost);
+    return postDtoRet;
   }
 
   public void deletePost(int postId) {
     postRepository.deletePost(postId);
+  }
+
+  public int updateLikesPost(int postId) {
+    Post findPost = postRepository.findById(postId);
+    int likes = findPost.getLikes();
+    findPost.setLikes(++likes);
+    postRepository.updatePost(findPost);
+    return likes;
   }
 }

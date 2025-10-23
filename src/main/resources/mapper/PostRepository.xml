@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.di_springtest.repository.PostRepository">
+    <!--    public List<Post> findAll();-->
+    <!--    public int insertPost(Post post);-->
+    <!--    public Post findById(int postId);-->
+    <!--    public void updatePost(Post post);-->
+    <!--    public void deletePost(int postId);-->
+    <select id="findAll"
+        resultType="org.example.di_springtest.model.Post">
+        SELECT post_id, title, body, likes FROM post
+    </select>
+    <select id="findById"
+    resultType="org.example.di_springtest.model.Post" parameterType="int">
+        select post_id, title, body, likes, FROM post where post_id = #{postId}
+
+    </select>
+
+    <insert id="insertPost"></insert>
+
+    <update id="updatePost"></update>
+    <delete id="deletePost"></delete>
+</mapper>

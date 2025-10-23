@@ -20,50 +20,33 @@ public class PostRestDtoController {
 
   @GetMapping("/posts")
   public List<PostAllResponseDto> viewAllPosts() {
-    return null;
-    //    return postService.getAllPost();
+    return postService.getAllPost();
   }
 
   @PostMapping("/posts")
-  public PostCreateRequestDto createNewPost(@RequestBody PostCreateRequestDto postDto) {
-
-    Post post = new Post();
-    post.setTitle(postDto.getTitle());
-    post.setBody(postDto.getBody());
-    String msg = postService.createPost(post) + "번째 게시판 글이 등록되었습니다.";
-    return null;
+  public PostDetailResponseDto createNewPost(@RequestBody PostCreateRequestDto postDto) {
+    return postService.createPost(postDto);
   }
 
   @PatchMapping("/posts/{postId}")
   public PostDetailResponseDto updateBodyPost(@PathVariable int postId,
-                           @RequestBody PostUpdateRequestDto postDto) {
-    Post post = new Post();
-    post.setPostId(postId);
-    post.setBody(postDto.getBody());
-    postService.updatePost(post);
-    return null;
-//    return postId + "번째 게시판 글이 수정되었습니다.";
+                                              @RequestBody PostUpdateRequestDto postDto) {
+    return postService.updatePost(postDto);
   }
 
   @PutMapping("/posts/{postId}")
   public int updateLikesPost(@PathVariable int postId) {
-    Post post = new Post();
-    post.setPostId(postId);
-//    post.setBody(postDto.getBody());
-    postService.updatePost(post);
-    return 0;
-//    return postId + "번째 게시판 글이 수정되었습니다.";
+    return postService.updateLikesPost(postId);
   }
 
   @DeleteMapping("/posts/{postId}")
-  public String deletePost(@PathVariable int postId){
+  public String deletePost(@PathVariable int postId) {
     postService.deletePost(postId);
     return postId + "번째 게시판 글이 삭제되었습니다.";
   }
 
   @GetMapping("/posts/{postId}")
   public PostDetailResponseDto viewPostDetail(@PathVariable int postId) {
-    return null;
-//    return postService.selectPost(postId);
+    return postService.selectPost(postId);
   }
 }
