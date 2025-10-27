@@ -1,62 +1,93 @@
 package org.example.di_springtest.controller;
 
+import org.example.di_springtest.dto.PostRequiryDto;
 import org.example.di_springtest.model.Post;
 import org.example.di_springtest.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//@Controller
-@RequestMapping("/ditest")
+@Controller
+@RequestMapping("/posts")
 public class PostController {
-//  @Autowired
+  //  @Autowired
   private final PostService postService;
 
-//  @Autowired
-  public PostController(PostService postService){
+  //  @Autowired
+  public PostController(PostService postService) {
     this.postService = postService;
   }
 
 
   @GetMapping("/list")
-  @ResponseBody
-  public List<Post> getAllPosts() {
-    return postService.getAllPost();
+//  @ResponseBody
+  public String getAllPosts(Model model) {
+    //List<Post> postService.getAllPost();
+    model.addAttribute("allPosts", postService.getAllPost());
+
+    return "postAll";
+  }
+
+  @GetMapping("/dynamic")
+//  @ResponseBody
+  public String getAllPostsDynamicCondition(@ModelAttribute PostRequiryDto postRequiry,
+                                                Model model) {
+    model.addAttribute("allPosts", postService.selectAllPostDynamicCondition(postRequiry));
+    return "postAll";
   }
 
 
   @GetMapping("/insert")
-  @ResponseBody
-  public String createPost(@RequestParam String title,
-                           @RequestParam String body) {
+//  @ResponseBody
+  public String createPost() {
+    //로그인 여부체크
+    return "postAdd";
+  }
 
-    Post post = new Post();
+  @PostMapping("/insert")
+  public String createPost(Model model, Post post) {
+    postService.createPost(post);
+//    String msg = postService.createPost(post) + "번째 게시판 글이 등록되었습니다.";
+//    return msg;
+    return "redirect:/posts/list";
 
-    post.setTitle(title);
-    post.setBody(body);
-
-    String msg = postService.createPost(post) + "번째 게시판 글이 등록되었습니다.";
-    return msg;
   }
 
   @GetMapping("/update/{postId}")
-  @ResponseBody
-  public String updatePost(@PathVariable int postId,
-                           @RequestParam String body) {
-//    Post post = postService.selectPost(postId);
-    Post post = new Post();
-    post.setPostId(postId);
-    post.setBody(body);
-    postService.updatePost(post);
-    return postId + "번째 게시판 글이 수정되었습니다.";
+//  @ResponseBody
+  public String updatePost(
+      @PathVariable int postId,
+      Model model) {
+    //로그인 여부체크
+    Post post = postService.selectPost(postId);
+    model.addAttribute("post", post);
+    return "postUpdate";
   }
 
-  @GetMapping ("/delete/{postId}")
-  @ResponseBody
-  public String deletePost(@PathVariable int postId){
+  @PostMapping("/update/{postId}")
+  public String updatePost(@PathVariable int postId,
+                           Post post) {
+    Post post1 = postService.selectPost(postId);
+    post1.setBody(post.getBody());
+    postService.updatePost(post1);
+    return "redirect:/posts/" + postId;
+  }
+
+  @GetMapping("/delete/{postId}")
+//  @ResponseBody
+  public String deletePost(@PathVariable int postId) {
+    //로그인 여부 체크
     postService.deletePost(postId);
-    return postId + "번째 게시판 글이 삭제되었습니다.";
+    return "redirect:/posts/list";
+  }
+
+  @GetMapping("/{postId}")
+  public String getPostById(@PathVariable int postId, Model model) {
+    Post post = postService.selectPost(postId);
+    model.addAttribute("post", post);
+    return "postDetail";
   }
 }

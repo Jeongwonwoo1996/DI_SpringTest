@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post detail</title>
+</head>
+<body>
+<h1>게시판 글 상세 조회</h1>
+<hr>
+<ul>
+    <li th:text="${post.postId}">postId</li>
+    <li th:text="${post.title}">title</li>
+    <li th:text="${post.body}">body</li>
+    <li th:text="${post.likes}">likes</li>
+</ul>
+<button th:onclick="|location.href='@{/posts/update/{postId}(postId=${post.postId})}'|"
+        type="button">
+    수정
+</button>
+<button th:onclick="|location.href='@{/posts/list}'|"
+        type="button">
+    이전으로
+</button>
+</body>
+</html>
