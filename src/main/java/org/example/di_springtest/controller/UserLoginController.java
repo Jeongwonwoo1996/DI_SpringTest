@@ -22,19 +22,19 @@ public class UserLoginController {
     return "userLogin";
   }
 
-  @PostMapping("/login")
-  public String userLogin(User user, HttpSession session){
-//    userService.createNewUser(user);
-    System.out.println(user.getPassword());
-    User findUser = userService.getUserByUserId(user.getUserId());
-
-    if(findUser != null && findUser.getPassword().equals(user.getPassword())){
-      session.setAttribute("user", findUser);
-      return "redirect:/posts/list";
-    }else{
-      return "redirect:/users/login";
-    }
-  }
+//  @PostMapping("/login")
+//  public String userLogin(User user, HttpSession session){
+////    userService.createNewUser(user);
+//    System.out.println(user.getPassword());
+//    User findUser = userService.getUserByUserId(user.getUserId());
+//
+//    if(findUser != null && findUser.getPassword().equals(user.getPassword())){
+//      session.setAttribute("user", findUser);
+//      return "redirect:/posts/list";
+//    }else{
+//      return "redirect:/users/login";
+//    }
+//  }
 
   @GetMapping("/logout")
   public String logout(HttpSession session){

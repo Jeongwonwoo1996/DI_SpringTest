@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Post detail</title>
@@ -7,16 +8,26 @@
 <body>
 <h1>게시판 글 상세 조회</h1>
 <hr>
+<div sec:authorize-expr="isAuthenticated()">
+    <span sec:authentication="principal.userId"></span>
+    <button>로그아웃</button>
+</div>
+<div sec:authorize-expr="!isAuthenticated()">
+    <span sec:authentication="principal.userId"></span>
+    <button>로그인</button>
+</div>
 <ul>
     <li th:text="${post.postId}">postId</li>
     <li th:text="${post.title}">title</li>
     <li th:text="${post.body}">body</li>
     <li th:text="${post.likes}">likes</li>
 </ul>
+<div th:if="${#authentication.principal.userId == post.user.userId}">
 <button th:onclick="|location.href='@{/posts/update/{postId}(postId=${post.postId})}'|"
         type="button">
     수정
 </button>
+</div>
 <button th:onclick="|location.href='@{/posts/list}'|"
         type="button">
     이전으로

@@ -3,41 +3,38 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.di_springtest.repository.PostRepository">
+    <!-- Post와 User 간의 매핑 -->
+    <resultMap id="PostResultMap" type="Post">
+        <id property="postId" column="post_id" />
+        <result property="title" column="title" />
+        <result property="body" column="body" />
+        <result property="likes" column="likes" />
+        <!-- N:1 관계 매핑 -->
+        <association property="user" javaType="User">
+            <id property="userId" column="user_id" />
+            <result property="password" column="password" />
+            <result property="userName" column="user_name" />
+        </association>
+    </resultMap>
+
     <select id="findAll"
-        resultType="Post">
-        SELECT post_id, title, body, likes FROM post
+            resultMap="PostResultMap">
+        SELECT post_id, title, body, likes , u.user_id, password, user_name FROM post p
+        join user u on p.user_id = u.user_id
     </select>
     <select id="findById"
-    resultType="Post" parameterType="int">
-        select post_id, title, body, likes FROM post where post_id = #{postId}
-    </select>
-    <insert id="insertPost"
-            parameterType="Post"
-            useGeneratedKeys="true"
-            keyProperty="postId">
-        insert into post(title, body, likes) values (#{title}, #{body}, #{likes})
-    </insert>
-    <update id="updatePost"
-            parameterType="Post">
-        update post
-        <set>
-            <if test="title != '' or title != null">title=#{title},</if>
-            <if test="body != ''"> body=#{body}, </if>
-            <if test="likes >= 0"> likes=#{likes} </if>
-        </set>
-
-        where post_id = #{postId}
-    </update>
-    <delete id="deletePost"
+            resultMap="PostResultMap"
             parameterType="int">
-        delete from post
+        select post_id, title, body, likes, u.user_id, password, user_name FROM post p
+        join user u on p.user_id = u.user_id
         where post_id = #{postId}
-    </delete>
+    </select>
     <!--    List<Post> findAllDynamic(PostRequiryDto postRequiry);-->
     <select id="findAllDynamic"
-            resultType="Post"
+            resultMap="PostResultMap"
             parameterType="org.example.di_springtest.dto.PostRequiryDto">
-        SELECT post_id, title, body, likes FROM post
+        SELECT post_id, title, body, likes, u.user_id, password, user_name FROM post p
+        join user u on p.user_id = u.user_id
         <where>
             <if test="title != null and title != ''">
                 title like concat('%', #{title}, '%')
@@ -47,4 +44,26 @@
             </if>
         </where>
     </select>
+
+    <insert id="insertPost"
+            parameterType="Post"
+            useGeneratedKeys="true"
+            keyProperty="postId">
+        insert into post(title, body, likes, user_id) values (#{title}, #{body}, #{likes}, #{user.userId})
+    </insert>
+    <update id="updatePost"
+            parameterType="Post">
+        update post
+        <set>
+            <if test="title != null or title != ''">title=#{title} , </if>
+            <if test="body != ''">body=#{body},</if>
+            <if test="likes >= 0">likes=#{likes} </if>
+        </set>
+        where post_id = #{postId}
+    </update>
+    <delete id="deletePost"
+            parameterType="int">
+        delete from post
+        where post_id = #{postId}
+    </delete>
 </mapper>
